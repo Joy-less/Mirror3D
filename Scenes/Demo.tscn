@@ -1,0 +1,61 @@
+[gd_scene load_steps=6 format=3 uid="uid://sjrb4d0asgpx"]
+
+[ext_resource type="PackedScene" uid="uid://delu2qjrw6teu" path="res://addons/Mirror3D/Mirror3D.tscn" id="1_0jree"]
+[ext_resource type="Script" uid="uid://bdmkoo6xjmx6u" path="res://Scripts/DemoCamera.gd" id="2_hlwta"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hlwta"]
+albedo_color = Color(0, 1, 0.216667, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_0jree"]
+albedo_color = Color(0.9, 0, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hrj8l"]
+albedo_color = Color(0.333333, 0, 1, 1)
+
+[node name="Demo" type="Node3D"]
+
+[node name="Mirror3D1" parent="." instance=ExtResource("1_0jree")]
+transform = Transform3D(0.74381, 0, 0.668391, 0, 1, 0, -0.668391, 0, 0.74381, -0.0272931, -0.347987, 0.383766)
+size = Vector2(0.5, 0.75)
+pixels_per_unit = 300
+distortion = 1.0
+
+[node name="Mirror3D2" parent="." instance=ExtResource("1_0jree")]
+transform = Transform3D(0.143683, 0, -0.989624, 0, 1, 0, 0.989624, 0, 0.143683, 1.55863, -0.347987, 1.12936)
+size = Vector2(1, 0.75)
+pixels_per_unit = 800
+distortion = 2.0
+
+[node name="Mirror3D3" parent="." instance=ExtResource("1_0jree")]
+transform = Transform3D(-0.870399, 0.245533, 0.426754, -3.72529e-09, 0.866775, -0.4987, -0.492347, -0.434068, -0.75444, 0.172747, -0.0586923, 2.05996)
+size = Vector2(0.35, 0.35)
+use_linear_filter = false
+
+[node name="Floor" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.767029, -0.921359, 1.13312)
+size = Vector3(2.53406, 0.32373, 2.59656)
+material = SubResource("StandardMaterial3D_hlwta")
+
+[node name="Ball" type="CSGSphere3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.557579, -0.5451, 1.13219)
+radius = 0.2
+radial_segments = 64
+rings = 64
+material = SubResource("StandardMaterial3D_0jree")
+
+[node name="Camera" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.67043, -0.249821, 1.02373)
+current = true
+script = ExtResource("2_hlwta")
+move_speed = 1.1
+turn_speed = 2.0
+
+[node name="Cylinder" type="CSGCylinder3D" parent="Camera"]
+radius = 0.1
+height = 0.4
+sides = 64
+material = SubResource("StandardMaterial3D_hrj8l")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.993093, 0.102166, 0.0576975, -0.0384632, -0.748043, 0.662534, 0.110848, 0.655739, 0.746806, 0, 0, 0)
+shadow_enabled = true
