@@ -15,16 +15,16 @@ void vertex() {
 
 void fragment() {
 	vec2 uv = FRONT_FACING ? UV : vec2(1.0 - UV.x, UV.y);
-	
+
 	float distortion_offset = texture(distortion_texture, uv).r;
 	// Map offset to [-1, 1] region
 	distortion_offset = (distortion_offset * 2.0) - 1.0;
-	
+
 	vec2 base_uv = uv + (distortion_offset * distortion_strength / VIEWPORT_SIZE);
 	vec4 mirror_sample = use_mirror_texture_linear
 		? texture(mirror_texture_linear, base_uv)
 		: texture(mirror_texture_nearest, base_uv);
-	
+
 	ALBEDO = mirror_sample.rgb * color.rgb;
 	ALPHA = color.a;
 }

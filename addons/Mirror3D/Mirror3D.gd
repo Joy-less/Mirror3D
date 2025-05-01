@@ -37,6 +37,10 @@ extends Node3D
 	set(value):
 		config_dirty = true
 		cull_mask = value
+## The minimum distance of objects the mirror will render.
+@export var cull_near:float = 0.05
+## The maximum distance of objects the mirror will render.
+@export var cull_far:float = 50.0
 
 ## The viewport used to render the mirror.
 @onready var mirror_viewport:SubViewport = $Viewport
@@ -83,13 +87,15 @@ func _process(delta:float)->void:
 		mirror_quad.global_basis.y
 	)
 	var camera_to_mirror_offset:Vector3 = mirror_quad.global_position - mirror_camera.global_position
-	var near:float = abs(camera_to_mirror_offset.dot(mirror_normal)) # Near plane distance
-	near += 0.05 # Avoid rendering own surface
+	
+	# Get near and far cull distances
+	var near:float = abs(camera_to_mirror_offset.dot(mirror_normal)) + cull_near
+	var far:float = camera_to_mirror_offset.length() + cull_far
 	
 	# Transform offset to camera's local coordinate system (frustum offset uses local space)
 	var cam_to_mirror_offset_camera_local:Vector3 = mirror_camera.global_basis.inverse() * camera_to_mirror_offset
 	var frustum_offset := Vector2(cam_to_mirror_offset_camera_local.x, cam_to_mirror_offset_camera_local.y)
-	mirror_camera.set_frustum(size.x, frustum_offset, near, 10_000)
+	mirror_camera.set_frustum(size.x, frustum_offset, near, far)
 #end
 
 ## Calculates the transformation that mirrors through the plane with the normal and offset.
