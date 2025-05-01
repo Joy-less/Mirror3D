@@ -23,12 +23,12 @@ extends Node3D
 		config_dirty = true
 		color = value
 ## The amount to use the distortion texture.
-@export_range(0, 100, 0.01) var distortion:float :
+@export_range(0, 100, 0.01) var distortion:float = 0.0 :
 	set(value):
 		config_dirty = true
 		distortion = value
 ## The noise texture to distort the mirror with.
-@export var distortion_texture:Texture2D :
+@export var distortion_texture:Texture2D = null :
 	set(value):
 		config_dirty = true
 		distortion_texture = value
