@@ -78,10 +78,10 @@ func _process(delta:float)->void:
 	# Transform mirror camera to opposite side of mirror plane
 	var mirror_normal:Vector3 = mirror_quad.global_basis.z
 	var mirror_transform:Transform3D = get_mirror_transform(mirror_normal, mirror_quad.global_position)
-	mirror_transform *= player_camera.global_transform
+	mirror_camera.global_transform = mirror_transform * player_camera.global_transform
 	
 	# Look perpendicular into mirror plane for frustum camera
-	mirror_camera.global_transform = mirror_transform.looking_at(
+	mirror_camera.global_transform = mirror_camera.global_transform.looking_at(
 		(mirror_camera.global_position / 2.0) + (player_camera.global_position / 2.0),
 		mirror_quad.global_basis.y
 	)
