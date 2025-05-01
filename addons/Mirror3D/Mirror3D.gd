@@ -3,28 +3,51 @@ class_name Mirror3D
 extends Node3D
 
 ## The size of the mirror quad mesh in units.
-@export var size:Vector2 = Vector2(1, 1)
+@export var size:Vector2 = Vector2(1, 1) :
+	set(value):
+		config_dirty = true
+		size = value
 ## The number of pixels to render per unit.
-@export var pixels_per_unit:int = 100
+@export var pixels_per_unit:int = 100 :
+	set(value):
+		config_dirty = true
+		pixels_per_unit = value
 ## If true, uses a linear (anti-aliased) filter, otherwise, uses a nearest (aliased) filter.
-@export var use_linear_filter:bool = true
+@export var use_linear_filter:bool = true :
+	set(value):
+		config_dirty = true
+		use_linear_filter = value
 ## The modulate applied to the mirror.
-@export var color:Color = Color(0.9, 0.97, 0.94)
+@export var color:Color = Color(0.9, 0.97, 0.94) :
+	set(value):
+		config_dirty = true
+		color = value
 ## The amount to use the distortion texture.
-@export_range(0, 100, 0.01) var distortion:float = 0.0
+@export_range(0, 100, 0.01) var distortion:float :
+	set(value):
+		config_dirty = true
+		distortion = value
 ## The noise texture to distort the mirror with.
-@export var distortion_texture:Texture2D
+@export var distortion_texture:Texture2D :
+	set(value):
+		config_dirty = true
+		distortion_texture = value
 ## The visibility layers rendered by the mirror.
-@export_flags_3d_render var cull_mask:int = 0xFFFFF
+@export_flags_3d_render var cull_mask:int = 0xFFFFF :
+	set(value):
+		config_dirty = true
+		cull_mask = value
 
-@export_group("Internal")
 ## The viewport used to render the mirror.
-@export var mirror_viewport:Viewport
+@onready var mirror_viewport:SubViewport = $Viewport
 ## The viewport camera used to sample the mirror.
-@export var mirror_camera:Camera3D
+@onready var mirror_camera:Camera3D = $Viewport/Camera
 ## The quad mesh instance used to display the mirror.
-@export var mirror_quad:MeshInstance3D
+@onready var mirror_quad:MeshInstance3D = $Quad
+## If true, the mirror will be reconfigured on the next frame.
+var config_dirty:bool = true
 
+## Updates the mirror.
 func _process(delta:float)->void:
 	# Get player camera viewing mirror
 	var player_camera:Camera3D = get_viewport().get_camera_3d()
@@ -36,17 +59,21 @@ func _process(delta:float)->void:
 		return
 	#end
 	
-	# Configure mirror
-	mirror_camera.cull_mask = cull_mask
-	mirror_quad.mesh.size = size
-	mirror_viewport.size = size * pixels_per_unit
-	var mirror_material:ShaderMaterial = mirror_quad.get_active_material(0)
-	mirror_material.set_shader_parameter(&"color", color)
-	mirror_material.set_shader_parameter(&"distortion_texture", distortion_texture)
-	mirror_material.set_shader_parameter(&"distortion_strength", distortion)
-	mirror_material.set_shader_parameter(&"mirror_texture_linear", mirror_viewport.get_texture() if use_linear_filter else null)
-	mirror_material.set_shader_parameter(&"mirror_texture_nearest", mirror_viewport.get_texture() if !use_linear_filter else null)
-	mirror_material.set_shader_parameter(&"use_mirror_texture_linear", use_linear_filter)
+	# Update config
+	if config_dirty:
+		config_dirty = false
+		var viewport_texture:ViewportTexture = mirror_viewport.get_texture()
+		var quad_material:ShaderMaterial = mirror_quad.get_active_material(0)
+		mirror_camera.cull_mask = cull_mask
+		mirror_quad.mesh.size = size
+		mirror_viewport.size = size * pixels_per_unit
+		quad_material.set_shader_parameter(&"color", color)
+		quad_material.set_shader_parameter(&"distortion_texture", distortion_texture)
+		quad_material.set_shader_parameter(&"distortion_strength", distortion)
+		quad_material.set_shader_parameter(&"mirror_texture_linear", viewport_texture if use_linear_filter else null)
+		quad_material.set_shader_parameter(&"mirror_texture_nearest", viewport_texture if !use_linear_filter else null)
+		quad_material.set_shader_parameter(&"use_mirror_texture_linear", use_linear_filter)
+	#end
 	
 	# Transform mirror camera to opposite side of mirror plane
 	var mirror_normal:Vector3 = mirror_quad.global_basis.z
