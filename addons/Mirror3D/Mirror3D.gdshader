@@ -32,5 +32,5 @@ void fragment() {
 
 	// Mix sample and color modulate
 	ALBEDO = mirror_sample.rgb * color.rgb;
-	ALPHA = color.a;
+	ALPHA = mirror_sample.a * color.a;
 }
