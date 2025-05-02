@@ -7,7 +7,7 @@ uniform sampler2D mirror_texture_linear : source_color, filter_linear_mipmap;
 uniform sampler2D mirror_texture_nearest : source_color, filter_nearest_mipmap;
 uniform bool use_mirror_texture_linear = true;
 uniform sampler2D distortion_texture : source_color, filter_linear_mipmap;
-uniform float distortion_strength : hint_range(0, 30);
+uniform float distortion_strength : hint_range(0, 100, 0.01);
 
 void vertex() {
 	UV.x = 1.0 - UV.x;
