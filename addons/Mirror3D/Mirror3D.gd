@@ -55,6 +55,8 @@ extends Node3D
 @export var cull_near:float = 0.05
 ## The maximum distance of objects the mirror will render.
 @export var cull_far:float = 50.0
+## The maximum distance of the player camera before the mirror is frozen.
+@export var freeze_distance:float = 50.0
 
 ## The viewport used to render the mirror.
 @onready var mirror_viewport:SubViewport = $Viewport
@@ -72,6 +74,14 @@ func _process(delta:float)->void:
 	# Ensure player camera exists
 	if !is_instance_valid(player_camera):
 		return
+	#end
+	
+	# Freeze mirror if player is far away
+	if global_position.distance_to(player_camera.global_position) >= freeze_distance:
+		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+		return
+	else:
+		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	#end
 	
 	# Configure mirror

@@ -33,12 +33,12 @@ distortion_texture = SubResource("NoiseTexture2D_707dm")
 size = Vector2i(100, 100)
 
 [node name="Camera" type="Camera3D" parent="Viewport"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 1.68294, 1.9177, -3.0806)
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0.1331, 0.321655, -2.57144)
 keep_aspect = 0
 projection = 2
-frustum_offset = Vector2(1.68294, -1.9177)
-near = 3.1306
-far = 10000.0
+frustum_offset = Vector2(0.1331, -0.321655)
+near = 2.62144
+far = 52.5949
 
 [node name="Quad" type="MeshInstance3D" parent="."]
 mesh = SubResource("QuadMesh_5i7m6")
