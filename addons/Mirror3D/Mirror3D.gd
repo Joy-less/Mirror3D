@@ -10,7 +10,7 @@ extends Node3D
 	#end
 #end
 ## The number of pixels to render per unit.
-@export var pixels_per_unit:int = 100 :
+@export var pixels_per_unit:int = 200 :
 	set(value):
 		config_dirty = true
 		pixels_per_unit = value

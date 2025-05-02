@@ -30,7 +30,7 @@ script = ExtResource("1_mtvun")
 distortion_texture = SubResource("NoiseTexture2D_707dm")
 
 [node name="Viewport" type="SubViewport" parent="."]
-size = Vector2i(100, 100)
+size = Vector2i(200, 200)
 
 [node name="Camera" type="Camera3D" parent="Viewport"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0.1331, 0.321655, -2.57144)

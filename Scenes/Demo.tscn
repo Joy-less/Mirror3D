@@ -29,6 +29,7 @@ distortion = 2.0
 [node name="Mirror3D3" parent="." instance=ExtResource("1_0jree")]
 transform = Transform3D(-0.870399, 0.245533, 0.426754, -3.72529e-09, 0.866775, -0.4987, -0.492347, -0.434068, -0.75444, 0.172747, -0.0586923, 2.05996)
 size = Vector2(0.35, 0.35)
+pixels_per_unit = 100
 use_linear_filter = false
 
 [node name="Floor" type="CSGBox3D" parent="."]
