@@ -127,5 +127,6 @@ static func get_mirror_transform(normal:Vector3, offset:Vector3)->Transform3D:
 	var basis_x:Vector3 = Vector3(1, 0, 0) - (2 * Vector3(normal.x * normal.x, normal.x * normal.y, normal.x * normal.z))
 	var basis_y:Vector3 = Vector3(0, 1, 0) - (2 * Vector3(normal.y * normal.x, normal.y * normal.y, normal.y * normal.z))
 	var basis_z:Vector3 = Vector3(0, 0, 1) - (2 * Vector3(normal.z * normal.x, normal.z * normal.y, normal.z * normal.z))
-	return Transform3D(basis_x, basis_y, basis_z, 2 * normal.dot(offset) * normal)
+	var origin:Vector3 = 2 * normal.dot(offset) * normal
+	return Transform3D(basis_x, basis_y, basis_z, origin)
 #end
