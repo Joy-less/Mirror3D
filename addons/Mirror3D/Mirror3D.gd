@@ -7,36 +7,50 @@ extends Node3D
 	set(value):
 		config_dirty = true
 		size = value
+	#end
+#end
 ## The number of pixels to render per unit.
 @export var pixels_per_unit:int = 100 :
 	set(value):
 		config_dirty = true
 		pixels_per_unit = value
+	#end
+#end
 ## If true, uses a linear (anti-aliased) filter, otherwise, uses a nearest (aliased) filter.
 @export var use_linear_filter:bool = true :
 	set(value):
 		config_dirty = true
 		use_linear_filter = value
+	#end
+#end
 ## The modulate applied to the mirror.
 @export var color:Color = Color(0.9, 0.97, 0.94) :
 	set(value):
 		config_dirty = true
 		color = value
+	#end
+#end
 ## The amount to use the distortion texture.
 @export_range(0, 100, 0.01) var distortion:float = 0.0 :
 	set(value):
 		config_dirty = true
 		distortion = value
+	#end
+#end
 ## The noise texture to distort the mirror with.
 @export var distortion_texture:Texture2D = null :
 	set(value):
 		config_dirty = true
 		distortion_texture = value
+	#end
+#end
 ## The visibility layers rendered by the mirror.
 @export_flags_3d_render var cull_mask:int = 0xFFFFF :
 	set(value):
 		config_dirty = true
 		cull_mask = value
+	#end
+#end
 ## The minimum distance of objects the mirror will render.
 @export var cull_near:float = 0.05
 ## The maximum distance of objects the mirror will render.
