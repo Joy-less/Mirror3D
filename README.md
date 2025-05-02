@@ -1,5 +1,7 @@
 # Mirror3D
 
+[![Godot Asset Library](https://img.shields.io/github/v/release/Joy-less/Mirror3D.svg?style=flat-square&label=Godot%20Asset%20Library&logo=godotengine)](https://godotengine.org/asset-library/asset/3983)
+
 A customizable 3D mirror for Godot 4.
 
 The mirror uses a `SubViewport` and a moving `Camera3D` to create a realistic and easy-to-use mirror effect.
