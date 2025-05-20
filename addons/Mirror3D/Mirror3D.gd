@@ -70,7 +70,12 @@ var config_dirty:bool = true
 ## Updates the mirror.
 func _process(delta:float)->void:
 	# Get player camera viewing mirror
-	var player_camera:Camera3D = get_viewport().get_camera_3d() if !Engine.is_editor_hint() else EditorInterface.get_editor_viewport_3d().get_camera_3d()
+	var player_camera:Camera3D
+	if Engine.is_editor_hint():
+		player_camera = Engine.get_singleton(&"EditorInterface").get_editor_viewport_3d().get_camera_3d()
+	else:
+		player_camera = get_viewport().get_camera_3d()
+	#end
 	# Ensure player camera exists
 	if !is_instance_valid(player_camera):
 		return
