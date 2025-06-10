@@ -69,6 +69,11 @@ var config_dirty:bool = true
 
 ## Updates the mirror.
 func _process(delta:float)->void:
+	# Ensure visible
+	if !is_visible_in_tree():
+		return
+	#end
+	
 	# Get player camera viewing mirror
 	var player_camera:Camera3D
 	if Engine.is_editor_hint():
