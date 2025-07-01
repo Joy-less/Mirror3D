@@ -57,6 +57,8 @@ extends Node3D
 @export var cull_far:float = 50.0
 ## The maximum distance of the player camera before the mirror is frozen.
 @export var freeze_distance:float = 50.0
+## The maximum number of mirror updates per second. If negative, unlimited.
+@export var max_fps:float = -1.0
 
 ## The viewport used to render the mirror.
 @onready var mirror_viewport:SubViewport = $Viewport
@@ -66,6 +68,10 @@ extends Node3D
 @onready var mirror_quad:MeshInstance3D = $Quad
 ## If true, the mirror will be reconfigured on the next frame.
 var config_dirty:bool = true
+## The number of seconds since the mirror was updated.
+var time_since_update:float = 0.0
+## If true, the mirror will be updated on the next frame regardless of max_fps.
+var time_update_dirty:bool = true
 
 ## Updates the mirror.
 func _process(delta:float)->void:
@@ -85,6 +91,21 @@ func _process(delta:float)->void:
 	if !is_instance_valid(player_camera):
 		return
 	#end
+	
+	# Ensure enough time passed since last update
+	if time_update_dirty:
+		time_update_dirty = false
+	else:
+		if max_fps >= 0:
+			time_since_update += delta
+			if time_since_update < 1.0 / max_fps:
+				mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+				return
+			#end
+		#end
+	#end
+	mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
+	time_since_update = 0
 	
 	# Freeze mirror if player is far away
 	if global_position.distance_to(player_camera.global_position) >= freeze_distance:

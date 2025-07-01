@@ -31,6 +31,7 @@ transform = Transform3D(-0.870399, 0.245533, 0.426754, -3.72529e-09, 0.866775, -
 size = Vector2(0.35, 0.35)
 pixels_per_unit = 100
 use_linear_filter = false
+max_fps = 15.0
 
 [node name="Floor" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.767029, -0.921359, 1.13312)
