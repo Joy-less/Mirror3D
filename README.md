@@ -7,6 +7,7 @@ A customizable 3D mirror for Godot 4.
 The mirror uses a `SubViewport` and a moving `Camera3D` to create a realistic and easy-to-use mirror effect.
 
 <img src="https://raw.githubusercontent.com/Joy-less/Mirror3D/main/Images/Example1.png" width="800" />
+<img src="https://raw.githubusercontent.com/Joy-less/Mirror3D/main/Images/Example2.png" width="800" />
 
 ## Usage
 
