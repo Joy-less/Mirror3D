@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://delu2qjrw6teu"]
+[gd_scene format=3 uid="uid://delu2qjrw6teu"]
 
 [ext_resource type="Script" uid="uid://ctd4r0bvuy052" path="res://addons/Mirror3D/Mirror3D.gd" id="1_mtvun"]
 [ext_resource type="Shader" uid="uid://bjf6fmae00yno" path="res://addons/Mirror3D/Mirror3D.gdshader" id="2_qi7e4"]
@@ -25,20 +25,20 @@ shader_parameter/distortion_strength = 0.0
 resource_local_to_scene = true
 material = SubResource("ShaderMaterial_iv7pg")
 
-[node name="Mirror3D" type="Node3D"]
+[node name="Mirror3D" type="Node3D" unique_id=916837440]
 script = ExtResource("1_mtvun")
 distortion_texture = SubResource("NoiseTexture2D_707dm")
 
-[node name="Viewport" type="SubViewport" parent="."]
+[node name="Viewport" type="SubViewport" parent="." unique_id=492097338]
 size = Vector2i(200, 200)
 
-[node name="Camera" type="Camera3D" parent="Viewport"]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0.1331, 0.321655, -2.57144)
+[node name="Camera" type="Camera3D" parent="Viewport" unique_id=1129476143]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0.13309953, 0.32165483, -2.5714407)
 keep_aspect = 0
 projection = 2
-frustum_offset = Vector2(0.1331, -0.321655)
-near = 2.62144
-far = 52.5949
+frustum_offset = Vector2(0.13309953, -0.32165483)
+near = 2.6214406
+far = 52.594894
 
-[node name="Quad" type="MeshInstance3D" parent="."]
+[node name="Quad" type="MeshInstance3D" parent="." unique_id=2061898132]
 mesh = SubResource("QuadMesh_5i7m6")
