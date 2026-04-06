@@ -44,6 +44,13 @@ extends Node3D
 		distortion_texture = value
 	#end
 #end
+## The mask texture the mirror uses.
+@export var mask_texture:Texture2D = null :
+	set(value):
+		config_dirty = true
+		mask_texture = value
+	#end
+#end
 ## The visibility layers rendered by the mirror.
 @export_flags_3d_render var cull_mask:int = 0xFFFFF :
 	set(value):
@@ -126,6 +133,7 @@ func _process(delta:float)->void:
 		quad_material.set_shader_parameter(&"color", color)
 		quad_material.set_shader_parameter(&"distortion_texture", distortion_texture)
 		quad_material.set_shader_parameter(&"distortion_strength", distortion)
+		quad_material.set_shader_parameter(&"mask_texture", mask_texture)
 		quad_material.set_shader_parameter(&"mirror_texture_linear", viewport_texture if use_linear_filter else null)
 		quad_material.set_shader_parameter(&"mirror_texture_nearest", viewport_texture if !use_linear_filter else null)
 		quad_material.set_shader_parameter(&"use_mirror_texture_linear", use_linear_filter)

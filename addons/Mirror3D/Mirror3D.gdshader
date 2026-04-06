@@ -5,9 +5,10 @@ render_mode cull_disabled; // Show both sides of mirror
 uniform vec4 color : source_color;
 uniform sampler2D mirror_texture_linear : source_color, filter_linear_mipmap;
 uniform sampler2D mirror_texture_nearest : source_color, filter_nearest_mipmap;
-uniform bool use_mirror_texture_linear = true;
+uniform bool use_mirror_texture_linear = false;
 uniform sampler2D distortion_texture : source_color, filter_linear_mipmap;
 uniform float distortion_strength : hint_range(0, 100, 0.01);
+uniform sampler2D mask_texture : source_color, filter_linear_mipmap;
 
 void vertex() {
 	// Flip mirror horizontally
@@ -32,5 +33,5 @@ void fragment() {
 
 	// Mix sample and color modulate
 	ALBEDO = mirror_sample.rgb * color.rgb;
-	ALPHA = mirror_sample.a * color.a;
+	ALPHA = mirror_sample.a * color.a * texture(mask_texture, UV).r;
 }
