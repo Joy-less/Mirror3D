@@ -131,12 +131,16 @@ func _process(delta:float)->void:
 		mirror_quad.mesh.size = size
 		mirror_viewport.size = size * pixels_per_unit
 		quad_material.set_shader_parameter(&"color", color)
-		quad_material.set_shader_parameter(&"distortion_texture", distortion_texture)
-		quad_material.set_shader_parameter(&"distortion_strength", distortion)
-		quad_material.set_shader_parameter(&"mask_texture", mask_texture)
 		quad_material.set_shader_parameter(&"mirror_texture_linear", viewport_texture if use_linear_filter else null)
 		quad_material.set_shader_parameter(&"mirror_texture_nearest", viewport_texture if !use_linear_filter else null)
 		quad_material.set_shader_parameter(&"use_mirror_texture_linear", use_linear_filter)
+		quad_material.set_shader_parameter(&"distortion_texture_linear", distortion_texture if use_linear_filter else null)
+		quad_material.set_shader_parameter(&"distortion_texture_nearest", distortion_texture if !use_linear_filter else null)
+		quad_material.set_shader_parameter(&"use_distortion_texture_linear", use_linear_filter)
+		quad_material.set_shader_parameter(&"distortion_strength", distortion)
+		quad_material.set_shader_parameter(&"mask_texture_linear", mask_texture if use_linear_filter else null)
+		quad_material.set_shader_parameter(&"mask_texture_nearest", mask_texture if !use_linear_filter else null)
+		quad_material.set_shader_parameter(&"use_mask_texture_linear", use_linear_filter)
 	#end
 	
 	# Transform mirror camera to opposite side of mirror plane
