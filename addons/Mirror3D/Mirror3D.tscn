@@ -18,8 +18,10 @@ shader = ExtResource("2_qi7e4")
 shader_parameter/color = Color(0.9, 0.97, 0.94, 1)
 shader_parameter/mirror_texture_linear = SubResource("ViewportTexture_4kaam")
 shader_parameter/use_mirror_texture_linear = true
-shader_parameter/distortion_texture = SubResource("NoiseTexture2D_707dm")
+shader_parameter/distortion_texture_linear = SubResource("NoiseTexture2D_707dm")
+shader_parameter/use_distortion_texture_linear = true
 shader_parameter/distortion_strength = 0.0
+shader_parameter/use_mask_texture_linear = true
 
 [sub_resource type="QuadMesh" id="QuadMesh_5i7m6"]
 resource_local_to_scene = true
