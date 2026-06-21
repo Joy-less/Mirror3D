@@ -1,5 +1,6 @@
 # Mirror3D
 
+[![Godot Asset Store](https://img.shields.io/github/v/release/Joy-less/Mirror3D.svg?label=Godot%20Asset%20Store&logo=godotengine)](https://store.godotengine.org/asset/joyless/mirror3d)
 [![Godot Asset Library](https://img.shields.io/github/v/release/Joy-less/Mirror3D.svg?style=flat-square&label=Godot%20Asset%20Library&logo=godotengine)](https://godotengine.org/asset-library/asset/3983)
 
 A customizable 3D mirror for Godot 4.
