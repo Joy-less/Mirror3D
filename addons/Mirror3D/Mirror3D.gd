@@ -105,14 +105,14 @@ func _process(delta:float)->void:
 	else:
 		if max_fps >= 0:
 			time_since_update += delta
-			if time_since_update < 1.0 / max_fps:
+			if time_since_update < (1.0 / max_fps):
 				mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 				return
 			#end
 		#end
 	#end
 	mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
-	time_since_update = 0
+	time_since_update = 0.0
 	
 	# Freeze mirror if player is far away
 	if global_position.distance_to(player_camera.global_position) >= freeze_distance:
