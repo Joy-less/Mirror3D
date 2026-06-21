@@ -5,13 +5,14 @@
 
 [sub_resource type="Gradient" id="Gradient_hlwta"]
 interpolation_mode = 1
-offsets = PackedFloat32Array(0, 0.14975846, 0.3)
+offsets = PackedFloat32Array(0, 0.2, 0.3)
 colors = PackedColorArray(1, 0, 0, 1, 0, 0, 0, 0, 1, 1, 1, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_hrj8l"]
 gradient = SubResource("Gradient_hlwta")
-width = 32
-height = 32
+width = 128
+height = 128
+fill_to = Vector2(1, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hlwta"]
 albedo_color = Color(0, 1, 0.216667, 1)
