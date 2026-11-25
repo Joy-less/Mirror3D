@@ -58,9 +58,9 @@ extends Node3D
 ## The maximum number of mirror updates per second. If negative, unlimited.
 @export var max_fps: float = -1.0
 ## The distance of the player camera at which the pixels per unit is halved (with no smooth transition). If negative, resolution falloff is disabled.
-@export var resolution_half_distance: float = 10.0
+@export var halve_resolution_distance: float = 10.0
 ## The minimum change in distance before resolution falloff is updated, to avoid repeated updates when close to the boundaries.
-@export var resolution_hysteresis: float = 0.5
+@export var halve_resolution_hysteresis: float = 0.5
 ## Whether to force the mirror to update on the next frame, ignoring [member visible], [member max_fps], and [member freeze_distance].
 @export var force_mirror_update_mode: FORCE_MIRROR_UPDATE_MODE = FORCE_MIRROR_UPDATE_MODE.DISABLED
 
@@ -198,10 +198,10 @@ func _process(delta: float) -> void:
 func _update_resolution_falloff(distance: float) -> void:
 	# Calculate resolution falloff based on player camera distance
 	var resolution_scale: float = 1.0
-	if resolution_half_distance >= 0.0:
-		if last_resolution_falloff_distance < 0.0 || absf(distance - last_resolution_falloff_distance) >= resolution_hysteresis:
+	if halve_resolution_distance >= 0.0:
+		if last_resolution_falloff_distance < 0.0 || absf(distance - last_resolution_falloff_distance) >= halve_resolution_hysteresis:
 			last_resolution_falloff_distance = distance
-		resolution_scale = pow(0.5, floorf(last_resolution_falloff_distance / resolution_half_distance))
+		resolution_scale = pow(0.5, floorf(last_resolution_falloff_distance / halve_resolution_distance))
 	
 	# Update mirror resolution
 	var new_mirror_viewport_size := Vector2i(size * pixels_per_unit * resolution_scale) \
