@@ -58,6 +58,10 @@ extends Node3D
 		cull_mask = value
 	#end
 #end
+## The distance of the player camera at which the pixels per unit is halved (with no smooth transition). If negative, resolution falloff is disabled.
+@export var resolution_half_distance:float = 10.0
+## The minimum change in distance before resolution falloff is updated, to avoid repeated updates when close to the boundaries.
+@export var resolution_hysteresis:float = 0.5
 ## The minimum distance of objects the mirror will render.
 @export var cull_near:float = 0.05
 ## The maximum distance of objects the mirror will render.
@@ -79,6 +83,8 @@ var config_dirty:bool = true
 var time_since_update:float = 0.0
 ## If true, the mirror will be updated on the next frame regardless of max_fps.
 var time_update_dirty:bool = true
+## The distance of the player camera during the most recent resolution falloff.
+var last_resolution_falloff_distance:float = -1.0
 
 ## Updates the mirror.
 func _process(delta:float)->void:
@@ -115,7 +121,8 @@ func _process(delta:float)->void:
 	time_since_update = 0.0
 	
 	# Freeze mirror if player is far away
-	if global_position.distance_to(player_camera.global_position) >= freeze_distance:
+	var player_camera_distance:float = mirror_quad.global_position.distance_to(player_camera.global_position)
+	if player_camera_distance >= freeze_distance:
 		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		return
 	else:
@@ -125,11 +132,11 @@ func _process(delta:float)->void:
 	# Configure mirror
 	if config_dirty:
 		config_dirty = false
+		last_resolution_falloff_distance = -1.0
 		var viewport_texture:ViewportTexture = mirror_viewport.get_texture()
 		var quad_material:ShaderMaterial = mirror_quad.get_active_material(0)
 		mirror_camera.cull_mask = cull_mask
 		mirror_quad.mesh.size = size
-		mirror_viewport.size = size * pixels_per_unit
 		quad_material.set_shader_parameter(&"color", color)
 		quad_material.set_shader_parameter(&"mirror_texture_linear", viewport_texture if use_linear_filter else null)
 		quad_material.set_shader_parameter(&"mirror_texture_nearest", viewport_texture if !use_linear_filter else null)
@@ -141,6 +148,21 @@ func _process(delta:float)->void:
 		quad_material.set_shader_parameter(&"mask_texture_linear", mask_texture if use_linear_filter else null)
 		quad_material.set_shader_parameter(&"mask_texture_nearest", mask_texture if !use_linear_filter else null)
 		quad_material.set_shader_parameter(&"use_mask_texture_linear", use_linear_filter)
+	#end
+	
+	# Calculate resolution falloff based on player camera distance
+	var resolution_scale:float = 1.0
+	if resolution_half_distance >= 0.0:
+		if last_resolution_falloff_distance < 0.0 || absf(player_camera_distance - last_resolution_falloff_distance) >= resolution_hysteresis:
+			last_resolution_falloff_distance = player_camera_distance
+		#end
+		resolution_scale = pow(0.5, floorf(last_resolution_falloff_distance / resolution_half_distance))
+	#end
+	
+	# Update mirror resolution
+	var new_mirror_viewport_size:Vector2i = Vector2i(size * pixels_per_unit * resolution_scale)
+	if mirror_viewport.size != new_mirror_viewport_size:
+		mirror_viewport.size = new_mirror_viewport_size
 	#end
 	
 	# Transform mirror camera to opposite side of mirror plane
