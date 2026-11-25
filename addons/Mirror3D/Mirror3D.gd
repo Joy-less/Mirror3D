@@ -83,6 +83,7 @@ func _process(delta: float)->void:
 	
 	# Ensure visible
 	if !is_visible_in_tree():
+		_update_resolution_falloff(INF)
 		return
 	
 	# Get player camera viewing mirror
@@ -93,7 +94,19 @@ func _process(delta: float)->void:
 		player_camera = get_viewport().get_camera_3d()
 	# Ensure player camera exists
 	if !is_instance_valid(player_camera):
+		_update_resolution_falloff(INF)
 		return
+	
+	# Update resolution falloff based on player camera distance
+	var player_camera_distance: float = mirror_quad.global_position.distance_to(player_camera.global_position)
+	_update_resolution_falloff(player_camera_distance)
+	
+	# Freeze mirror if player is far away
+	if player_camera_distance >= freeze_distance:
+		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+		return
+	else:
+		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	
 	# Ensure enough time passed since last update
 	if time_update_dirty:
@@ -106,14 +119,6 @@ func _process(delta: float)->void:
 				return
 	mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	time_since_update = 0.0
-	
-	# Freeze mirror if player is far away
-	var player_camera_distance: float = mirror_quad.global_position.distance_to(player_camera.global_position)
-	if player_camera_distance >= freeze_distance:
-		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
-		return
-	else:
-		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	
 	# Configure mirror
 	if config_dirty:
@@ -135,18 +140,6 @@ func _process(delta: float)->void:
 		quad_material.set_shader_parameter(&"mask_texture_nearest", mask_texture if !use_linear_filter else null)
 		quad_material.set_shader_parameter(&"use_mask_texture_linear", use_linear_filter)
 	
-	# Calculate resolution falloff based on player camera distance
-	var resolution_scale: float = 1.0
-	if resolution_half_distance >= 0.0:
-		if last_resolution_falloff_distance < 0.0 || absf(player_camera_distance - last_resolution_falloff_distance) >= resolution_hysteresis:
-			last_resolution_falloff_distance = player_camera_distance
-		resolution_scale = pow(0.5, floorf(last_resolution_falloff_distance / resolution_half_distance))
-	
-	# Update mirror resolution
-	var new_mirror_viewport_size := Vector2i(size * pixels_per_unit * resolution_scale)
-	if mirror_viewport.size != new_mirror_viewport_size:
-		mirror_viewport.size = new_mirror_viewport_size
-	
 	# Transform mirror camera to opposite side of mirror plane
 	var mirror_normal: Vector3 = mirror_quad.global_basis.z
 	var mirror_transform: Transform3D = get_mirror_transform(mirror_normal, mirror_quad.global_position)
@@ -167,6 +160,20 @@ func _process(delta: float)->void:
 	var cam_to_mirror_offset_camera_local: Vector3 = mirror_camera.global_basis.inverse() * camera_to_mirror_offset
 	var frustum_offset := Vector2(cam_to_mirror_offset_camera_local.x, cam_to_mirror_offset_camera_local.y)
 	mirror_camera.set_frustum(size.x, frustum_offset, near, far)
+
+## Updates the mirror resolution based on resolution falloff from the player camera distance.
+func _update_resolution_falloff(distance: float) -> void:
+	# Calculate resolution falloff based on player camera distance
+	var resolution_scale: float = 1.0
+	if resolution_half_distance >= 0.0:
+		if last_resolution_falloff_distance < 0.0 || absf(distance - last_resolution_falloff_distance) >= resolution_hysteresis:
+			last_resolution_falloff_distance = distance
+		resolution_scale = pow(0.5, floorf(last_resolution_falloff_distance / resolution_half_distance))
+	
+	# Update mirror resolution
+	var new_mirror_viewport_size := Vector2i(size * pixels_per_unit * resolution_scale)
+	if mirror_viewport.size != new_mirror_viewport_size:
+		mirror_viewport.size = new_mirror_viewport_size
 
 ## Calculates the transformation that mirrors through the plane with the normal and offset.
 static func get_mirror_transform(normal: Vector3, offset: Vector3)->Transform3D:
