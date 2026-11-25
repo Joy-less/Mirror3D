@@ -129,7 +129,10 @@ func _process(delta: float) -> void:
 		return
 	else:
 		if !is_updating_resolution:
-			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
+			if force_mirror_update_mode != FORCE_MIRROR_UPDATE_MODE.DISABLED:
+				mirror_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+			else:
+				mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	
 	# Ensure enough time passed since last update
 	if max_fps >= 0.0 && force_mirror_update_mode == FORCE_MIRROR_UPDATE_MODE.DISABLED:
@@ -139,7 +142,10 @@ func _process(delta: float) -> void:
 				mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 			return
 	if !is_updating_resolution:
-		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
+		if force_mirror_update_mode != FORCE_MIRROR_UPDATE_MODE.DISABLED:
+			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+		else:
+			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	time_since_update = 0.0
 	
 	# Configure mirror
