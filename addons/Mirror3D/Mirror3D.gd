@@ -67,8 +67,6 @@ extends Node3D
 var is_config_dirty: bool = true
 ## The number of seconds since the mirror was updated.
 var time_since_update: float = 0.0
-## If true, the mirror will be updated on the next frame regardless of [member max_fps].
-var time_update_dirty: bool = true
 ## The distance of the player camera during the most recent resolution falloff.
 var last_resolution_falloff_distance: float = -1.0
 ## If true, the mirror is currently updating its resolution and should be redrawn.
@@ -120,15 +118,12 @@ func _process(delta: float) -> void:
 			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	
 	# Ensure enough time passed since last update
-	if time_update_dirty:
-		time_update_dirty = false
-	else:
-		if max_fps >= 0:
-			time_since_update += delta
-			if time_since_update < (1.0 / max_fps):
-				if !is_updating_resolution:
-					mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
-				return
+	if max_fps >= 0:
+		time_since_update += delta
+		if time_since_update < (1.0 / max_fps):
+			if !is_updating_resolution:
+				mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+			return
 	if !is_updating_resolution:
 		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	time_since_update = 0.0
