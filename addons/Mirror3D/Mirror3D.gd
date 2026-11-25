@@ -5,42 +5,42 @@ extends Node3D
 ## The size of the mirror quad mesh in units.
 @export var size: Vector2 = Vector2(1, 1) :
 	set(value):
-		config_dirty = true
+		is_config_dirty = true
 		size = value
 ## The number of pixels to render per unit.
 @export var pixels_per_unit: int = 200 :
 	set(value):
-		config_dirty = true
+		is_config_dirty = true
 		pixels_per_unit = value
 ## If true, uses a linear (anti-aliased) filter; otherwise, uses a nearest (aliased) filter.
 @export var use_linear_filter: bool = true :
 	set(value):
-		config_dirty = true
+		is_config_dirty = true
 		use_linear_filter = value
 ## The modulate applied to the mirror.
 @export var color: Color = Color(0.9, 0.97, 0.94) :
 	set(value):
-		config_dirty = true
+		is_config_dirty = true
 		color = value
 ## The amount to use the distortion texture.
 @export_range(0, 100, 0.01) var distortion: float = 0.0 :
 	set(value):
-		config_dirty = true
+		is_config_dirty = true
 		distortion = value
 ## The noise texture to distort the mirror with.
 @export var distortion_texture: Texture2D = null :
 	set(value):
-		config_dirty = true
+		is_config_dirty = true
 		distortion_texture = value
 ## The mask texture the mirror uses.
 @export var mask_texture: Texture2D = null :
 	set(value):
-		config_dirty = true
+		is_config_dirty = true
 		mask_texture = value
 ## The visibility layers rendered by the mirror.
 @export_flags_3d_render var cull_mask: int = 0xFFFFF :
 	set(value):
-		config_dirty = true
+		is_config_dirty = true
 		cull_mask = value
 ## The distance of the player camera at which the pixels per unit is halved (with no smooth transition). If negative, resolution falloff is disabled.
 @export var resolution_half_distance: float = 10.0
@@ -64,7 +64,7 @@ extends Node3D
 ## The quad mesh instance used to display the mirror.
 @onready var mirror_quad: MeshInstance3D = $Quad
 ## If true, the mirror will be reconfigured on the next frame.
-var config_dirty: bool = true
+var is_config_dirty: bool = true
 ## The number of seconds since the mirror was updated.
 var time_since_update: float = 0.0
 ## If true, the mirror will be updated on the next frame regardless of [member max_fps].
@@ -134,8 +134,8 @@ func _process(delta: float) -> void:
 	time_since_update = 0.0
 	
 	# Configure mirror
-	if config_dirty:
-		config_dirty = false
+	if is_config_dirty:
+		is_config_dirty = false
 		last_resolution_falloff_distance = -1.0
 		var viewport_texture: ViewportTexture = mirror_viewport.get_texture()
 		var quad_material: ShaderMaterial = mirror_quad.get_active_material(0)
