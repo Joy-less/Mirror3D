@@ -36,6 +36,7 @@ size = Vector2i(200, 200)
 
 [node name="Camera" type="Camera3D" parent="Viewport" unique_id=1129476143]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0.13309953, 0.32165483, -2.5714407)
+physics_interpolation_mode = 2
 keep_aspect = 0
 projection = 2
 frustum_offset = Vector2(0.13309953, -0.32165483)
