@@ -62,7 +62,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.67043, -0.249821, 1.02373)
 current = true
 script = ExtResource("2_hlwta")
 move_speed = 1.1
-turn_speed = 2.0
+turn_speed = 2.2
 
 [node name="Cylinder" type="CSGCylinder3D" parent="Camera" unique_id=600803786]
 radius = 0.1
