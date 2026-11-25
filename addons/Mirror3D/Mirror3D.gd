@@ -2,6 +2,16 @@
 class_name Mirror3D
 extends Node3D
 
+@export_group("Camera")
+## If valid, this camera will be used as the player camera instead of the active camera.
+@export var player_camera_override: Camera3D = null
+## The visibility layers rendered by the mirror.
+@export_flags_3d_render var cull_mask: int = 0xFFFFF :
+	set(value):
+		is_config_dirty = true
+		cull_mask = value
+
+@export_group("Appearance")
 ## The size of the mirror quad mesh in units.
 @export var size: Vector2 = Vector2(1, 1) :
 	set(value):
@@ -37,15 +47,8 @@ extends Node3D
 	set(value):
 		is_config_dirty = true
 		mask_texture = value
-## The visibility layers rendered by the mirror.
-@export_flags_3d_render var cull_mask: int = 0xFFFFF :
-	set(value):
-		is_config_dirty = true
-		cull_mask = value
-## The distance of the player camera at which the pixels per unit is halved (with no smooth transition). If negative, resolution falloff is disabled.
-@export var resolution_half_distance: float = 10.0
-## The minimum change in distance before resolution falloff is updated, to avoid repeated updates when close to the boundaries.
-@export var resolution_hysteresis: float = 0.5
+
+@export_group("Performance")
 ## The minimum distance of objects the mirror will render.
 @export var cull_near: float = 0.05
 ## The maximum distance of objects the mirror will render.
@@ -54,8 +57,10 @@ extends Node3D
 @export var freeze_distance: float = 50.0
 ## The maximum number of mirror updates per second. If negative, unlimited.
 @export var max_fps: float = -1.0
-## If valid, this camera will be used as the player camera instead of the active camera.
-@export var player_camera_override: Camera3D = null
+## The distance of the player camera at which the pixels per unit is halved (with no smooth transition). If negative, resolution falloff is disabled.
+@export var resolution_half_distance: float = 10.0
+## The minimum change in distance before resolution falloff is updated, to avoid repeated updates when close to the boundaries.
+@export var resolution_hysteresis: float = 0.5
 ## Whether to force the mirror to update on the next frame, ignoring [member visible], [member max_fps], and [member freeze_distance].
 @export var force_mirror_update_mode: FORCE_MIRROR_UPDATE_MODE = FORCE_MIRROR_UPDATE_MODE.DISABLED
 
