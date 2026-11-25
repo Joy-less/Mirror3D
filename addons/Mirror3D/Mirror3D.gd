@@ -71,9 +71,14 @@ var time_since_update: float = 0.0
 var time_update_dirty: bool = true
 ## The distance of the player camera during the most recent resolution falloff.
 var last_resolution_falloff_distance: float = -1.0
+## If true, the mirror is currently updating its resolution and should be redrawn.
+var is_updating_resolution: bool = false
 
 ## Updates the mirror.
 func _process(delta: float) -> void:
+	# Disable resolution redraw flag
+	is_updating_resolution = false
+	
 	# Prevent changing the scale, because this breaks the reflection
 	var current_scale: Vector3 = Vector3.ONE
 	var current_node: Node3D = self
@@ -107,10 +112,12 @@ func _process(delta: float) -> void:
 	
 	# Freeze mirror if player is far away
 	if player_camera_distance >= freeze_distance:
-		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+		if !is_updating_resolution:
+			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		return
 	else:
-		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
+		if !is_updating_resolution:
+			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	
 	# Ensure enough time passed since last update
 	if time_update_dirty:
@@ -119,9 +126,11 @@ func _process(delta: float) -> void:
 		if max_fps >= 0:
 			time_since_update += delta
 			if time_since_update < (1.0 / max_fps):
-				mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
+				if !is_updating_resolution:
+					mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 				return
-	mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
+	if !is_updating_resolution:
+		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	time_since_update = 0.0
 	
 	# Configure mirror
@@ -175,9 +184,14 @@ func _update_resolution_falloff(distance: float) -> void:
 		resolution_scale = pow(0.5, floorf(last_resolution_falloff_distance / resolution_half_distance))
 	
 	# Update mirror resolution
-	var new_mirror_viewport_size := Vector2i(size * pixels_per_unit * resolution_scale)
+	var new_mirror_viewport_size := Vector2i(size * pixels_per_unit * resolution_scale) \
+		.maxi(2) # Minimum viewport resolution is 2x2
 	if mirror_viewport.size != new_mirror_viewport_size:
 		mirror_viewport.size = new_mirror_viewport_size
+		
+		# Redraw mirror to avoid appearing completely black
+		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
+		is_updating_resolution = true
 
 ## Calculates the transformation that mirrors through the plane with the normal and offset.
 static func _get_mirror_transform(normal: Vector3, offset: Vector3) -> Transform3D:
