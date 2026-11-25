@@ -30,7 +30,6 @@ material = SubResource("ShaderMaterial_iv7pg")
 [node name="Mirror3D" type="Node3D" unique_id=916837440]
 script = ExtResource("1_mtvun")
 distortion_texture = SubResource("NoiseTexture2D_707dm")
-resolution_hysteresis = 1.0
 
 [node name="Viewport" type="SubViewport" parent="." unique_id=492097338]
 size = Vector2i(200, 200)
