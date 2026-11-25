@@ -76,8 +76,6 @@ var is_config_dirty: bool = true
 var time_since_update: float = 0.0
 ## The distance of the player camera during the most recent resolution falloff.
 var last_resolution_falloff_distance: float = -1.0
-## If true, the mirror is currently updating its resolution and should be redrawn.
-var is_updating_resolution: bool = false
 
 ## The possible values for [member force_mirror_update_mode].
 enum FORCE_MIRROR_UPDATE_MODE {
@@ -91,9 +89,6 @@ enum FORCE_MIRROR_UPDATE_MODE {
 
 ## Updates the mirror.
 func _process(delta: float) -> void:
-	# Disable resolution redraw flag
-	is_updating_resolution = false
-	
 	# Prevent changing the scale, because this breaks the reflection
 	var current_scale: Vector3 = Vector3.ONE
 	var current_node: Node3D = self
@@ -105,8 +100,7 @@ func _process(delta: float) -> void:
 	
 	# Ensure visible
 	if !is_visible_in_tree() && force_mirror_update_mode == FORCE_MIRROR_UPDATE_MODE.DISABLED:
-		_update_resolution_falloff(INF)
-		if !is_updating_resolution:
+		if !_update_resolution_falloff(INF):
 			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		return
 	
@@ -120,14 +114,13 @@ func _process(delta: float) -> void:
 		player_camera = get_viewport().get_camera_3d()
 	# Ensure player camera exists
 	if !is_instance_valid(player_camera):
-		_update_resolution_falloff(INF)
-		if !is_updating_resolution:
+		if !_update_resolution_falloff(INF):
 			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		return
 	
 	# Update resolution falloff based on player camera distance
 	var player_camera_distance: float = mirror_quad.global_position.distance_to(player_camera.global_position)
-	_update_resolution_falloff(player_camera_distance)
+	var is_updating_resolution: bool = _update_resolution_falloff(player_camera_distance)
 	
 	# Freeze mirror if player is far away
 	if player_camera_distance >= freeze_distance && force_mirror_update_mode == FORCE_MIRROR_UPDATE_MODE.DISABLED:
@@ -195,7 +188,7 @@ func _process(delta: float) -> void:
 		force_mirror_update_mode = FORCE_MIRROR_UPDATE_MODE.DISABLED
 
 ## Updates the mirror resolution based on resolution falloff from the player camera distance.
-func _update_resolution_falloff(distance: float) -> void:
+func _update_resolution_falloff(distance: float) -> bool:
 	# Calculate resolution falloff based on player camera distance
 	var resolution_scale: float = 1.0
 	if halve_resolution_distance >= 0.0:
@@ -211,7 +204,9 @@ func _update_resolution_falloff(distance: float) -> void:
 		
 		# Redraw mirror to avoid appearing completely black
 		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
-		is_updating_resolution = true
+		return true
+	else:
+		return false
 
 ## Calculates the transformation that mirrors through the plane with the normal and offset.
 static func _get_mirror_transform(normal: Vector3, offset: Vector3) -> Transform3D:
