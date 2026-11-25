@@ -56,6 +56,8 @@ extends Node3D
 @export var max_fps: float = -1.0
 ## If valid, this camera will be used as the player camera instead of the active camera.
 @export var player_camera_override: Camera3D = null
+## Whether to force the mirror to update on the next frame, ignoring [member visible], [member max_fps], and [member freeze_distance].
+@export var force_mirror_update_mode: FORCE_MIRROR_UPDATE_MODE = FORCE_MIRROR_UPDATE_MODE.DISABLED
 
 ## The viewport used to render the mirror.
 @onready var mirror_viewport: SubViewport = $Viewport
@@ -72,6 +74,16 @@ var last_resolution_falloff_distance: float = -1.0
 ## If true, the mirror is currently updating its resolution and should be redrawn.
 var is_updating_resolution: bool = false
 
+## The possible values for [member force_mirror_update_mode].
+enum FORCE_MIRROR_UPDATE_MODE {
+	## The mirror will not be forced to update.
+	DISABLED = 0,
+	## The mirror will be forced to update once, then switch to [constant DISABLED].
+	ONCE = 1,
+	## The mirror will be forced to update every frame.
+	ALWAYS = 2,
+}
+
 ## Updates the mirror.
 func _process(delta: float) -> void:
 	# Disable resolution redraw flag
@@ -87,8 +99,10 @@ func _process(delta: float) -> void:
 		scale /= current_scale
 	
 	# Ensure visible
-	if !is_visible_in_tree():
+	if !is_visible_in_tree() && force_mirror_update_mode == FORCE_MIRROR_UPDATE_MODE.DISABLED:
 		_update_resolution_falloff(INF)
+		if !is_updating_resolution:
+			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		return
 	
 	# Get player camera viewing mirror
@@ -102,6 +116,8 @@ func _process(delta: float) -> void:
 	# Ensure player camera exists
 	if !is_instance_valid(player_camera):
 		_update_resolution_falloff(INF)
+		if !is_updating_resolution:
+			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		return
 	
 	# Update resolution falloff based on player camera distance
@@ -109,7 +125,7 @@ func _process(delta: float) -> void:
 	_update_resolution_falloff(player_camera_distance)
 	
 	# Freeze mirror if player is far away
-	if player_camera_distance >= freeze_distance:
+	if player_camera_distance >= freeze_distance && force_mirror_update_mode == FORCE_MIRROR_UPDATE_MODE.DISABLED:
 		if !is_updating_resolution:
 			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_DISABLED
 		return
@@ -118,7 +134,7 @@ func _process(delta: float) -> void:
 			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	
 	# Ensure enough time passed since last update
-	if max_fps >= 0:
+	if max_fps >= 0.0 && force_mirror_update_mode == FORCE_MIRROR_UPDATE_MODE.DISABLED:
 		time_since_update += delta
 		if time_since_update < (1.0 / max_fps):
 			if !is_updating_resolution:
@@ -168,6 +184,10 @@ func _process(delta: float) -> void:
 	var cam_to_mirror_offset_camera_local: Vector3 = mirror_camera.global_basis.inverse() * camera_to_mirror_offset
 	var frustum_offset := Vector2(cam_to_mirror_offset_camera_local.x, cam_to_mirror_offset_camera_local.y)
 	mirror_camera.set_frustum(size.x, frustum_offset, near, far)
+	
+	# Update force mirror update mode
+	if force_mirror_update_mode == FORCE_MIRROR_UPDATE_MODE.ONCE:
+		force_mirror_update_mode = FORCE_MIRROR_UPDATE_MODE.DISABLED
 
 ## Updates the mirror resolution based on resolution falloff from the player camera distance.
 func _update_resolution_falloff(distance: float) -> void:
