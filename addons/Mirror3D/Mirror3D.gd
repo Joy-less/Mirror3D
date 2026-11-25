@@ -98,6 +98,26 @@ func _process(delta: float) -> void:
 	if !current_scale.is_equal_approx(Vector3.ONE):
 		scale /= current_scale
 	
+	# Configure mirror
+	if is_config_dirty:
+		is_config_dirty = false
+		last_resolution_falloff_distance = -1.0
+		var viewport_texture: ViewportTexture = mirror_viewport.get_texture()
+		var quad_material: ShaderMaterial = mirror_quad.get_active_material(0)
+		mirror_camera.cull_mask = cull_mask
+		mirror_quad.mesh.size = size
+		quad_material.set_shader_parameter(&"color", color)
+		quad_material.set_shader_parameter(&"mirror_texture_linear", viewport_texture if use_linear_filter else null)
+		quad_material.set_shader_parameter(&"mirror_texture_nearest", viewport_texture if !use_linear_filter else null)
+		quad_material.set_shader_parameter(&"use_mirror_texture_linear", use_linear_filter)
+		quad_material.set_shader_parameter(&"distortion_texture_linear", distortion_texture if use_linear_filter else null)
+		quad_material.set_shader_parameter(&"distortion_texture_nearest", distortion_texture if !use_linear_filter else null)
+		quad_material.set_shader_parameter(&"use_distortion_texture_linear", use_linear_filter)
+		quad_material.set_shader_parameter(&"distortion_strength", distortion)
+		quad_material.set_shader_parameter(&"mask_texture_linear", mask_texture if use_linear_filter else null)
+		quad_material.set_shader_parameter(&"mask_texture_nearest", mask_texture if !use_linear_filter else null)
+		quad_material.set_shader_parameter(&"use_mask_texture_linear", use_linear_filter)
+	
 	# Ensure visible
 	if !is_visible_in_tree() && force_mirror_update_mode == FORCE_MIRROR_UPDATE_MODE.DISABLED:
 		if !_update_resolution_falloff(INF):
@@ -147,26 +167,6 @@ func _process(delta: float) -> void:
 		else:
 			mirror_viewport.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE
 	time_since_update = 0.0
-	
-	# Configure mirror
-	if is_config_dirty:
-		is_config_dirty = false
-		last_resolution_falloff_distance = -1.0
-		var viewport_texture: ViewportTexture = mirror_viewport.get_texture()
-		var quad_material: ShaderMaterial = mirror_quad.get_active_material(0)
-		mirror_camera.cull_mask = cull_mask
-		mirror_quad.mesh.size = size
-		quad_material.set_shader_parameter(&"color", color)
-		quad_material.set_shader_parameter(&"mirror_texture_linear", viewport_texture if use_linear_filter else null)
-		quad_material.set_shader_parameter(&"mirror_texture_nearest", viewport_texture if !use_linear_filter else null)
-		quad_material.set_shader_parameter(&"use_mirror_texture_linear", use_linear_filter)
-		quad_material.set_shader_parameter(&"distortion_texture_linear", distortion_texture if use_linear_filter else null)
-		quad_material.set_shader_parameter(&"distortion_texture_nearest", distortion_texture if !use_linear_filter else null)
-		quad_material.set_shader_parameter(&"use_distortion_texture_linear", use_linear_filter)
-		quad_material.set_shader_parameter(&"distortion_strength", distortion)
-		quad_material.set_shader_parameter(&"mask_texture_linear", mask_texture if use_linear_filter else null)
-		quad_material.set_shader_parameter(&"mask_texture_nearest", mask_texture if !use_linear_filter else null)
-		quad_material.set_shader_parameter(&"use_mask_texture_linear", use_linear_filter)
 	
 	# Transform mirror camera to opposite side of mirror plane
 	var mirror_normal: Vector3 = mirror_quad.global_basis.z
