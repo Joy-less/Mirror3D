@@ -88,6 +88,17 @@ var last_resolution_falloff_distance:float = -1.0
 
 ## Updates the mirror.
 func _process(delta:float)->void:
+	# Prevent changing the scale, because this breaks the reflection
+	var current_scale: Vector3 = Vector3.ONE
+	var current_node: Node3D = self
+	while is_instance_valid(current_node):
+		current_scale *= current_node.scale
+		current_node = current_node.get_parent_node_3d()
+	#end
+	if !current_scale.is_equal_approx(Vector3.ONE):
+		scale /= current_scale
+	#end
+	
 	# Ensure visible
 	if !is_visible_in_tree():
 		return
