@@ -54,6 +54,8 @@ extends Node3D
 @export var freeze_distance: float = 50.0
 ## The maximum number of mirror updates per second. If negative, unlimited.
 @export var max_fps: float = -1.0
+## If valid, this camera will be used as the player camera instead of the active camera.
+@export var player_camera_override: Camera3D = null
 
 ## The viewport used to render the mirror.
 @onready var mirror_viewport: SubViewport = $Viewport
@@ -88,7 +90,9 @@ func _process(delta: float) -> void:
 	
 	# Get player camera viewing mirror
 	var player_camera: Camera3D
-	if Engine.is_editor_hint():
+	if is_instance_valid(player_camera_override):
+		player_camera = player_camera_override
+	elif Engine.is_editor_hint():
 		player_camera = Engine.get_singleton(&"EditorInterface").get_editor_viewport_3d().get_camera_3d()
 	else:
 		player_camera = get_viewport().get_camera_3d()
