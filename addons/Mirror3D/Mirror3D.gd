@@ -71,7 +71,7 @@ var time_update_dirty: bool = true
 var last_resolution_falloff_distance: float = -1.0
 
 ## Updates the mirror.
-func _process(delta: float)->void:
+func _process(delta: float) -> void:
 	# Prevent changing the scale, because this breaks the reflection
 	var current_scale: Vector3 = Vector3.ONE
 	var current_node: Node3D = self
@@ -142,7 +142,7 @@ func _process(delta: float)->void:
 	
 	# Transform mirror camera to opposite side of mirror plane
 	var mirror_normal: Vector3 = mirror_quad.global_basis.z
-	var mirror_transform: Transform3D = get_mirror_transform(mirror_normal, mirror_quad.global_position)
+	var mirror_transform: Transform3D = _get_mirror_transform(mirror_normal, mirror_quad.global_position)
 	mirror_camera.global_transform = mirror_transform * player_camera.global_transform
 	
 	# Look perpendicular into mirror plane for frustum camera
@@ -176,7 +176,7 @@ func _update_resolution_falloff(distance: float) -> void:
 		mirror_viewport.size = new_mirror_viewport_size
 
 ## Calculates the transformation that mirrors through the plane with the normal and offset.
-static func get_mirror_transform(normal: Vector3, offset: Vector3)->Transform3D:
+static func _get_mirror_transform(normal: Vector3, offset: Vector3) -> Transform3D:
 	var basis_x: Vector3 = Vector3(1, 0, 0) - (2 * Vector3(normal.x * normal.x, normal.x * normal.y, normal.x * normal.z))
 	var basis_y: Vector3 = Vector3(0, 1, 0) - (2 * Vector3(normal.y * normal.x, normal.y * normal.y, normal.y * normal.z))
 	var basis_z: Vector3 = Vector3(0, 0, 1) - (2 * Vector3(normal.z * normal.x, normal.z * normal.y, normal.z * normal.z))

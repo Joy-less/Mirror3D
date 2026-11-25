@@ -3,7 +3,7 @@ extends Camera3D
 @export var move_speed: float
 @export var turn_speed: float
 
-func _process(delta:float)->void:
+func _process(delta:float) -> void:
 	if Input.is_physical_key_pressed(KEY_UP) || Input.is_physical_key_pressed(KEY_W):
 		global_position -= global_basis.z.normalized() * delta * move_speed
 	if Input.is_physical_key_pressed(KEY_DOWN) || Input.is_physical_key_pressed(KEY_S):
