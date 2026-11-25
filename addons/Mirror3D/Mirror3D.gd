@@ -12,7 +12,7 @@ extends Node3D
 	set(value):
 		config_dirty = true
 		pixels_per_unit = value
-## If true, uses a linear (anti-aliased) filter, otherwise, uses a nearest (aliased) filter.
+## If true, uses a linear (anti-aliased) filter; otherwise, uses a nearest (aliased) filter.
 @export var use_linear_filter: bool = true :
 	set(value):
 		config_dirty = true
@@ -65,7 +65,7 @@ extends Node3D
 var config_dirty: bool = true
 ## The number of seconds since the mirror was updated.
 var time_since_update: float = 0.0
-## If true, the mirror will be updated on the next frame regardless of max_fps.
+## If true, the mirror will be updated on the next frame regardless of [member max_fps].
 var time_update_dirty: bool = true
 ## The distance of the player camera during the most recent resolution falloff.
 var last_resolution_falloff_distance: float = -1.0
