@@ -199,7 +199,7 @@ func _process(delta: float) -> void:
 	
 	# Transform offset to camera's local coordinate system (frustum offset uses local space)
 	var cam_to_mirror_offset_camera_local: Vector3 = mirror_camera.global_basis.inverse() * camera_to_mirror_offset
-	var frustum_offset := Vector2(cam_to_mirror_offset_camera_local.x, cam_to_mirror_offset_camera_local.y)
+	var frustum_offset: Vector2 = Vector2(cam_to_mirror_offset_camera_local.x, cam_to_mirror_offset_camera_local.y)
 	mirror_camera.set_frustum(size.x, frustum_offset, near, far)
 	
 	# Update force mirror update mode
@@ -216,7 +216,7 @@ func _update_resolution_falloff(distance: float) -> bool:
 		resolution_scale = pow(0.5, floorf(last_resolution_falloff_distance / halve_resolution_distance))
 	
 	# Update mirror resolution
-	var scaled_pixels_per_unit := roundi(pixels_per_unit * resolution_scale)
+	var scaled_pixels_per_unit: int = roundi(pixels_per_unit * resolution_scale)
 	var new_mirror_viewport_size: Vector2i = Vector2i(size * scaled_pixels_per_unit) \
 		.max(min_resolution)
 	if mirror_viewport.size != new_mirror_viewport_size:
