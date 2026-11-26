@@ -63,12 +63,19 @@ extends Node3D
 ## [br][br]
 ## [b]Note:[/b] This setting has no effect if [member halve_resolution_distance] is negative.
 @export var halve_resolution_hysteresis: float = 0.5
-## The minimum resolution in pixels, intended for use with [member halve_resolution_distance].
+## The minimum resolution in pixels.
 ## [br][br]
 ## [b]Note:[/b] It's recommended to make this at least 32x32, otherwise SSAO and SSIL may cause errors (see [url]https://github.com/godotengine/godot/issues/86631[/url]).
 @export var min_resolution: Vector2i = Vector2i(32, 32) :
 	set(value):
 		min_resolution = value.max(MINIMUM_VIEWPORT_SIZE)
+		max_resolution = max_resolution
+## The maximum resolution in pixels.
+## [br][br]
+## [b]Note:[/b] It's recommended to make this at least 32x32, otherwise SSAO and SSIL may cause errors (see [url]https://github.com/godotengine/godot/issues/86631[/url]).
+@export var max_resolution: Vector2i = Vector2i(4096, 4096) :
+	set(value):
+		max_resolution = value.max(min_resolution)
 ## Whether to force the mirror to update on the next frame, ignoring [member visible], [member max_fps], and [member freeze_distance].
 @export var force_mirror_update_mode: FORCE_MIRROR_UPDATE_MODE = FORCE_MIRROR_UPDATE_MODE.DISABLED
 
@@ -216,9 +223,12 @@ func _update_resolution_falloff(distance: float) -> bool:
 		resolution_scale = pow(0.5, floorf(last_resolution_falloff_distance / halve_resolution_distance))
 	
 	# Update mirror resolution
-	var scaled_pixels_per_unit: int = roundi(pixels_per_unit * resolution_scale)
-	var new_mirror_viewport_size: Vector2i = Vector2i(size * scaled_pixels_per_unit) \
-		.max(min_resolution)
+	var new_mirror_viewport_size: Vector2i = Vector2i(_clamp_keep_aspect(
+		size * pixels_per_unit * resolution_scale,
+		min_resolution,
+		max_resolution,
+		size
+	).round()).max(MINIMUM_VIEWPORT_SIZE)
 	if mirror_viewport.size != new_mirror_viewport_size:
 		mirror_viewport.size = new_mirror_viewport_size
 		
@@ -235,3 +245,14 @@ static func _get_mirror_transform(normal: Vector3, offset: Vector3) -> Transform
 	var basis_z: Vector3 = Vector3(0, 0, 1) - (2 * Vector3(normal.z * normal.x, normal.z * normal.y, normal.z * normal.z))
 	var origin: Vector3 = 2 * normal.dot(offset) * normal
 	return Transform3D(basis_x, basis_y, basis_z, origin)
+
+## Clamps all components above [param min], then increases the largest component to ensure [param aspect_ratio], then clamps all components below [param max].
+## [br][br]
+## [b]Note:[/b] This may result in an unexpected aspect ratio if [param max] prevents the largest component from being increased to a value that would meet the aspect ratio.
+static func _clamp_keep_aspect(value: Vector2, min: Vector2, max: Vector2, aspect_ratio: Vector2) -> Vector2:
+	var scale_multiplier: float = maxf(
+		maxf(value.x / aspect_ratio.x, value.y / aspect_ratio.y),
+		maxf(min.x / aspect_ratio.x, min.y / aspect_ratio.y),
+	)
+	var result: Vector2 = aspect_ratio * scale_multiplier
+	return result.min(max.max(min))
