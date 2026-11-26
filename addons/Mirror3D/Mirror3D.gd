@@ -49,17 +49,19 @@ extends Node3D
 		mask_texture = value
 
 @export_group("Performance")
-## The minimum distance of objects the mirror will render.
+## The minimum distance of objects in units that the mirror will render.
 @export var cull_near: float = 0.05
-## The maximum distance of objects the mirror will render.
+## The maximum distance of objects in units that the mirror will render.
 @export var cull_far: float = 50.0
-## The maximum distance of the player camera before the mirror is frozen.
+## The maximum distance of the player camera in units before the mirror is frozen.
 @export var freeze_distance: float = 50.0
 ## The maximum number of mirror updates per second. If negative, unlimited.
 @export var max_fps: float = -1.0
-## The distance of the player camera at which the pixels per unit is halved (with no smooth transition). If negative, resolution falloff is disabled.
+## The distance of the player camera in units at which the pixels per unit is halved (with no smooth transition). If negative, resolution falloff is disabled.
 @export var halve_resolution_distance: float = 10.0
-## The minimum change in distance before resolution falloff is updated, to avoid repeated updates when close to the boundaries.
+## The minimum change in the distance of the player camera in units before resolution falloff is updated, to avoid repeated updates when close to the boundaries.
+## [br][br]
+## [b]Note:[/b] This setting has no effect if [member halve_resolution_distance] is negative.
 @export var halve_resolution_hysteresis: float = 0.5
 ## The minimum resolution in pixels, intended for use with [member halve_resolution_distance].
 ## [br][br]
@@ -80,7 +82,7 @@ extends Node3D
 var is_config_dirty: bool = true
 ## The number of seconds since the mirror was updated.
 var time_since_update: float = 0.0
-## The distance of the player camera during the most recent resolution falloff.
+## The distance of the player camera in units during the most recent resolution falloff.
 var last_resolution_falloff_distance: float = -1.0
 
 ## The possible values for [member force_mirror_update_mode].
