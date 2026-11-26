@@ -222,7 +222,7 @@ func _update_resolution_falloff(distance: float) -> bool:
 	if mirror_viewport.size != new_mirror_viewport_size:
 		mirror_viewport.size = new_mirror_viewport_size
 		
-		# Redraw mirror to avoid appearing completely black
+		# Force redraw mirror to avoid appearing completely black
 		mirror_viewport.render_target_update_mode = SubViewport.UPDATE_ONCE
 		return true
 	else:
