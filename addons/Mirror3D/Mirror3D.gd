@@ -87,6 +87,9 @@ enum FORCE_MIRROR_UPDATE_MODE {
 	ALWAYS = 2,
 }
 
+## The minimum allowed size of a Viewport.
+const MINIMUM_VIEWPORT_SIZE: Vector2i = Vector2i(2, 2)
+
 ## Updates the mirror.
 func _process(delta: float) -> void:
 	# Prevent changing the scale, because this breaks the reflection
@@ -206,7 +209,7 @@ func _update_resolution_falloff(distance: float) -> bool:
 	
 	# Update mirror resolution
 	var new_mirror_viewport_size := Vector2i(size * pixels_per_unit * resolution_scale) \
-		.maxi(2) # Minimum viewport resolution is 2x2
+		.max(MINIMUM_VIEWPORT_SIZE)
 	if mirror_viewport.size != new_mirror_viewport_size:
 		mirror_viewport.size = new_mirror_viewport_size
 		
