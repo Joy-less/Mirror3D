@@ -61,6 +61,12 @@ extends Node3D
 @export var halve_resolution_distance: float = 10.0
 ## The minimum change in distance before resolution falloff is updated, to avoid repeated updates when close to the boundaries.
 @export var halve_resolution_hysteresis: float = 0.5
+## The minimum resolution in pixels, intended for use with [member halve_resolution_distance].
+## [br][br]
+## [b]Note:[/b] It's recommended to make this at least 32x32, otherwise SSAO and SSIL may cause errors (see [url]https://github.com/godotengine/godot/issues/86631[/url]).
+@export var min_resolution: Vector2i = Vector2i(32, 32) :
+	set(value):
+		min_resolution = value.max(MINIMUM_VIEWPORT_SIZE)
 ## Whether to force the mirror to update on the next frame, ignoring [member visible], [member max_fps], and [member freeze_distance].
 @export var force_mirror_update_mode: FORCE_MIRROR_UPDATE_MODE = FORCE_MIRROR_UPDATE_MODE.DISABLED
 
@@ -208,8 +214,9 @@ func _update_resolution_falloff(distance: float) -> bool:
 		resolution_scale = pow(0.5, floorf(last_resolution_falloff_distance / halve_resolution_distance))
 	
 	# Update mirror resolution
-	var new_mirror_viewport_size := Vector2i(size * pixels_per_unit * resolution_scale) \
-		.max(MINIMUM_VIEWPORT_SIZE)
+	var scaled_pixels_per_unit := roundi(pixels_per_unit * resolution_scale)
+	var new_mirror_viewport_size: Vector2i = Vector2i(size * scaled_pixels_per_unit) \
+		.max(min_resolution)
 	if mirror_viewport.size != new_mirror_viewport_size:
 		mirror_viewport.size = new_mirror_viewport_size
 		
