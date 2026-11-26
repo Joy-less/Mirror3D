@@ -65,12 +65,16 @@ extends Node3D
 @export var halve_resolution_hysteresis: float = 0.5
 ## The minimum resolution in pixels.
 ## [br][br]
+## The resolution will be at least this value, regardless of properties like [member pixels_per_unit] and [member halve_resolution_distance]. The aspect ratio will be preserved up to [member max_resolution].
+## [br][br]
 ## [b]Note:[/b] It's recommended to make this at least 32x32, otherwise SSAO and SSIL may cause errors (see [url]https://github.com/godotengine/godot/issues/86631[/url]).
 @export var min_resolution: Vector2i = Vector2i(32, 32) :
 	set(value):
 		min_resolution = value.max(MINIMUM_VIEWPORT_SIZE)
 		max_resolution = max_resolution
 ## The maximum resolution in pixels.
+## [br][br]
+## The resolution will be at most this value, regardless of properties like [member pixels_per_unit] and [member halve_resolution_distance]. The aspect ratio will be preserved up to this value.
 ## [br][br]
 ## [b]Note:[/b] It's recommended to make this at least 32x32, otherwise SSAO and SSIL may cause errors (see [url]https://github.com/godotengine/godot/issues/86631[/url]).
 @export var max_resolution: Vector2i = Vector2i(4096, 4096) :
