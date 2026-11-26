@@ -95,7 +95,9 @@ func _process(delta: float) -> void:
 	while is_instance_valid(current_node):
 		current_scale *= current_node.scale
 		current_node = current_node.get_parent_node_3d()
-	if !current_scale.is_equal_approx(Vector3.ONE):
+	if !current_scale.is_finite():
+		scale = Vector3.ONE
+	elif !current_scale.is_equal_approx(Vector3.ONE):
 		scale /= current_scale
 	
 	# Configure mirror
